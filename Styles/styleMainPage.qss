@@ -1,0 +1,47 @@
+/* ───────────────────────────  MAIN PAGE  ─────────────────────────── */
+
+/* ∎ Background – violet vertical gradient */
+QWidget#CentralArea {
+    background: qlineargradient(
+        x1:0, y1:0,  x2:0, y2:1,
+        stop:0   #75638F,
+        stop:1   #59496F
+    );
+}
+
+/* ∎ Headline banner */
+QLabel#IntroLabel {
+    color:  #CEF9F2;
+    font:   600 26px "Roboto";
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.10);
+    border: 2px solid #AB92BF;
+    border-radius: 12px;
+    max-width: 800px;
+    max-height: 75px;
+}
+
+/* ∎ Base style for EVERY button on the page */
+QWidget#CentralArea QPushButton {
+    color:  #CEF9F2;
+    font:   600 18px "Roboto";
+    padding: 8px 24px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid #AB92BF;
+    border-radius: 12px;
+}
+
+/*   ── shared hover / pressed states ──   */
+QWidget#CentralArea QPushButton:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: #BFA0D0;
+}
+QWidget#CentralArea QPushButton:pressed {
+    background: rgba(255,255,255,0.14);
+    border-color: #9D7EC0;
+}
+
+/* ∎ Button‑specific tweaks */
+QPushButton#AfmBtn {
+    max-width: 320px;         /* narrower than banner for focus */
+}

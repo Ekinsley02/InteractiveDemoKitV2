@@ -1,58 +1,63 @@
-# main.py
-# This code was writen by: Elliott Kinsley
-# The purpose of this code is to create a GUI for an interactive demostration kit
-# This mainn file is used to control GUI applications
-
-# import libraries
+# main.py  –  app entry point & page router
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
+import pathlib
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
+from GUI.MainMenu    import MenuPage
+from GUI.AfmGUI      import AfmPageWidget
+from GUI.TopographyGUI import TopographyPageWidget
 
-# global config variables
-
-# build main application
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Main Menu")
-        self.setGeometry(100, 100, 800, 480)
+        self.setWindowTitle("Interactive Demo Kit")
+        self.resize(800, 480)
 
-        # Central widget
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
+        # ── stacked‑page container ──────────────────────────────────
+        self.stack = QStackedWidget()
+        self.setCentralWidget(self.stack)
 
-        self.central_widget.setStyleSheet("background-color: #655A7C;")
+        # page 0 → main menu
+        self.menu_page = MenuPage()
+        self.stack.addWidget(self.menu_page)
+        
 
-        # Layout
-        self.layout = QVBoxLayout()
-        self.central_widget.setLayout(self.layout)
+        # page 1 → AFM live‑plot
+        self.afm_page = AfmPageWidget()
+        self.stack.addWidget(self.afm_page)
 
-        # ────── 1) LOGO AT THE TOP ──────
-        logo_lbl = QLabel()
-        pixmap   = QPixmap("logo.png")                  # put your filename here
-        # If you want to guarantee it fits:
-        pixmap   = pixmap.scaledToWidth(
-            250, Qt.TransformationMode.SmoothTransformation
+        # ── navigation wiring ───────────────────────────────────────
+        self.menu_page.afm_btn.clicked.connect(
+            lambda: self.stack.setCurrentWidget(self.afm_page)
         )
-        logo_lbl.setPixmap(pixmap)
-        logo_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.layout.addWidget(logo_lbl)
-        # add label
-        self.introLabel = QLabel("Welcome to the interactive demostration kit!")
-        self.introLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.layout.addWidget(self.introLabel)
+        self.afm_page.back_requested.connect(
+            lambda: self.stack.setCurrentWidget(self.menu_page)
+        )
 
-        # Add buttons
-        self.afmButton = QPushButton("Atomic Force Microscope")
-        self.layout.addWidget(self.afmButton)
+        # page 2 → Topography page
+        self.topo_page = TopographyPageWidget()
+        self.stack.addWidget(self.topo_page)
+
+        # connect AfmPageWidget to TopographyPageWidget
+        self.afm_page.map_requested.connect(
+            lambda: self.stack.setCurrentWidget(self.topo_page)
+        )
+
+        # Topography back to AfmPageWidget
+        self.topo_page.back_requested.connect(
+            lambda: self.stack.setCurrentWidget(self.afm_page)
+        )
+
+        # start on the menu
+        self.stack.setCurrentWidget(self.menu_page)
+
 
 def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
